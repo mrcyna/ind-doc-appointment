@@ -6,7 +6,7 @@ A simple NodeJS app to find sweet IND Doc pickup appointment.
 git clone git@github.com:mrcyna/ind-doc-appointment.git ind-doc-appointment
 cd ind-doc-appointment
 npm install
-npm start
+npm start 2022-11-30 AM
 ```
 
 ## Notification on Mac
