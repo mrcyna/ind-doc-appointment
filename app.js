@@ -46,6 +46,17 @@ const isDate = (date) => {
   return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
 }
 
+const currentDate = () => {
+  let currentdate = new Date();
+
+  return currentdate.getFullYear() + "/"
+    + (currentdate.getMonth()+1)  + "/"
+    + currentdate.getDate() + " @ "
+    + currentdate.getHours() + ":"
+    + currentdate.getMinutes() + ":"
+    + currentdate.getSeconds();
+}
+
 (async () => {
   const deadline = process.argv[2];
   const desk = process.argv[3];
@@ -60,23 +71,32 @@ const isDate = (date) => {
     process.exit(2);
   }
 
+  notifier('', {
+    title: '✋🏻 IND Appointment Finder',
+    subtitle: `Starting to search for an open slot at desk ${desk} before ${deadline}`
+  })
 
   while (true) {
-    const result = await isThereAnySlotBefore(deadline, desk);
+    try {
+      const result = await isThereAnySlotBefore(deadline, desk);
+      const d = currentDate();
 
-    if (result) {
-      console.log(`✅ Found an open slot at ${desk} desk on ${result.date} ${result.startTime}.`);
+      if (result) {
+        console.log(`✅ ${d}, Found an open slot at ${desk} desk on ${result.date} ${result.startTime}.`);
 
-      notifier(`${result.date} ${result.startTime} at ${desk} Desk`, {
-        title: '🗓 IND Appointment Available!',
-        subtitle: `Congratulations! You can click on me and make the appointment.`,
-        open: 'https://oap.ind.nl/oap/en/#/doc',
-      });
-    } else {
-      console.log(`🔎 No slot has been found at desk ${desk} before ${deadline}. Keep looking...`);
+        notifier(`${result.date} ${result.startTime} at ${desk} Desk`, {
+          title: '🗓 IND Appointment Available!',
+          subtitle: `Congratulations! You can click on me and make the appointment.`,
+          open: 'https://oap.ind.nl/oap/en/#/doc',
+        });
+      } else {
+        console.log(`🔎 ${d}, No slot has been found at desk ${desk} before ${deadline}. Keep looking...`);
+      }
+
+      await delay(10 * 1000);
+    } catch (error) {
+      console.log(`⛔️ Oops! Something goes wrong. Error:`, error);
     }
-
-    await delay(10 * 1000);
   }
 
 })();
